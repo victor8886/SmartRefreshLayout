@@ -1,41 +1,48 @@
 package com.scwang.smartrefresh.layout.constant;
 
+@SuppressWarnings("unused")
 public enum RefreshState {
-    None,
-    PullDownToRefresh, PullToUpLoad,
-    PullDownCanceled, PullUpCanceled,
-    ReleaseToRefresh, ReleaseToLoad,
-    Refreshing, Loading,
-    RefreshFinish, LoadFinish,;
+    None(0,false),
+    PullDownToRefresh(1,true), PullToUpLoad(2,true),
+    PullDownCanceled(1,false), PullUpCanceled(2,false),
+    ReleaseToRefresh(1,true), ReleaseToLoad(2,true),
+    ReleaseToTwoLevel(1, true), TwoLevelReleased(1,false),
+    RefreshReleased(1,false), LoadReleased(2,false),
+    Refreshing(1,false,true), Loading(2,false,true), TwoLevel(1, false, true),
+    RefreshFinish(1,false,false,true), LoadFinish(2,false,false,true), TwoLevelFinish(1,false,false,true),;
 
-    public boolean isAnimating() {
-        return this == Refreshing ||
-                this == Loading;
+    private final int role;
+    public final boolean draging;// 正在拖动状态：PullDownToRefresh PullToUpLoad ReleaseToRefresh ReleaseToLoad ReleaseToTwoLevel
+    public final boolean opening;// 正在刷新状态：Refreshing Loading TwoLevel
+    public final boolean finishing;//正在完成状态：RefreshFinish LoadFinish TwoLevelFinish
+
+    RefreshState(int role, boolean draging) {
+        this.role = role;
+        this.draging = draging;
+        this.opening = false;
+        this.finishing = false;
     }
 
-    public boolean isDraging() {
-        return ordinal() >= PullDownToRefresh.ordinal()
-                && ordinal() <= ReleaseToLoad.ordinal()
-                && this != PullDownCanceled
-                && this != PullUpCanceled;
+    RefreshState(int role, boolean draging, boolean opening) {
+        this.role = role;
+        this.draging = draging;
+        this.opening = opening;
+        this.finishing = false;
     }
 
-    public boolean isDragingHeader() {
-        return this == PullDownToRefresh ||
-                this == ReleaseToRefresh;
-    }
-
-    public boolean isDragingFooter() {
-        return this == PullToUpLoad ||
-                this == ReleaseToLoad;
+    RefreshState(int role, boolean draging, boolean opening, boolean finishing) {
+        this.role = role;
+        this.draging = draging;
+        this.opening = opening;
+        this.finishing = finishing;
     }
 
     public boolean isHeader() {
-        return (ordinal() & 1) == 1;
+        return role == 1;
     }
 
     public boolean isFooter() {
-        return (ordinal() & 1) == 0 && ordinal() > 0;
+        return role == 2;
     }
 
 }

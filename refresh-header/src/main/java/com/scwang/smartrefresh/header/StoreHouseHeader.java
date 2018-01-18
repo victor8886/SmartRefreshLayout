@@ -1,6 +1,5 @@
 package com.scwang.smartrefresh.header;
 
-import android.support.annotation.RequiresApi;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -9,8 +8,10 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.os.Build;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.Transformation;
@@ -26,6 +27,11 @@ import com.scwang.smartrefresh.layout.util.DensityUtil;
 
 import java.util.ArrayList;
 
+/**
+ * StoreHouseHeader
+ * Created by SCWANG on 2017/5/31.
+ * from https://github.com/liaohuqiu/android-Ultra-Pull-To-Refresh
+ */
 public class  StoreHouseHeader extends View implements RefreshHeader {
 
     //<editor-fold desc="Field">
@@ -204,7 +210,7 @@ public class  StoreHouseHeader extends View implements RefreshHeader {
         return this;
     }
 
-    public StoreHouseHeader setTextColor(int color) {
+    public StoreHouseHeader setTextColor(@ColorInt int color) {
         mTextColor = color;
         for (int i = 0; i < mItemList.size(); i++) {
             mItemList.get(i).setColor(color);
@@ -333,7 +339,7 @@ public class  StoreHouseHeader extends View implements RefreshHeader {
     //<editor-fold desc="RefreshHeader">
 
     @Override
-    public void onInitialized(RefreshKernel kernel, int height, int extendHeight) {
+    public void onInitialized(@NonNull RefreshKernel kernel, int height, int extendHeight) {
         if (mBackgroundColor != 0) {
             kernel.requestDrawBackgoundForHeader(mBackgroundColor);
         }
@@ -362,8 +368,13 @@ public class  StoreHouseHeader extends View implements RefreshHeader {
     }
 
     @Override
-    public void onStartAnimator(RefreshLayout layout, int headHeight, int extendHeight) {
+    public void onRefreshReleased(RefreshLayout layout, int headerHeight, int extendHeight) {
         beginLoading();
+    }
+
+    @Override
+    public void onStartAnimator(@NonNull RefreshLayout layout, int headHeight, int extendHeight) {
+
     }
 
     @Override
@@ -376,7 +387,7 @@ public class  StoreHouseHeader extends View implements RefreshHeader {
     }
 
     @Override
-    public int onFinish(RefreshLayout layout, boolean success) {
+    public int onFinish(@NonNull RefreshLayout layout, boolean success) {
         loadFinish();
         for (int i = 0; i < mItemList.size(); i++) {
             mItemList.get(i).resetPosition(mHorizontalRandomness);
@@ -384,8 +395,8 @@ public class  StoreHouseHeader extends View implements RefreshHeader {
         return 0;
     }
 
-    @Override
-    public void setPrimaryColors(int... colors) {
+    @Override@Deprecated
+    public void setPrimaryColors(@ColorInt int ... colors) {
         if (colors.length > 0) {
             mBackgroundColor = colors[0];
             if (mRefreshKernel != null) {
@@ -403,6 +414,7 @@ public class  StoreHouseHeader extends View implements RefreshHeader {
         return this;
     }
 
+    @NonNull
     @Override
     public SpinnerStyle getSpinnerStyle() {
         return SpinnerStyle.Translate;

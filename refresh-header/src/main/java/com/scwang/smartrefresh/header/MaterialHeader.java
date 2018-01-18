@@ -1,13 +1,14 @@
 package com.scwang.smartrefresh.header;
 
-import android.support.annotation.RequiresApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.os.Build;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.annotation.VisibleForTesting;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -29,7 +30,6 @@ import static android.view.View.MeasureSpec.getSize;
  * Material 主题下拉头
  * Created by SCWANG on 2017/6/2.
  */
-
 @SuppressWarnings("unused")
 public class MaterialHeader extends ViewGroup implements RefreshHeader {
 
@@ -198,7 +198,10 @@ public class MaterialHeader extends ViewGroup implements RefreshHeader {
 
     //<editor-fold desc="RefreshHeader">
     @Override
-    public void onInitialized(RefreshKernel kernel, int height, int extendHeight) {
+    public void onInitialized(@NonNull RefreshKernel kernel, int height, int extendHeight) {
+        if (!mShowBezierWave) {
+            kernel.requestDefaultHeaderTranslationContent(false);
+        }
         if (isInEditMode()) {
             mWaveHeight = mHeadHeight = height / 2;
         }
@@ -214,21 +217,21 @@ public class MaterialHeader extends ViewGroup implements RefreshHeader {
     }
 
     @Override
-    public void onPullingDown(float percent, int offset, int headHeight, int extendHeight) {
+    public void onPullingDown(float percent, int offset, int headerHeight, int extendHeight) {
         if (mShowBezierWave) {
-            mHeadHeight = Math.min(offset, headHeight);
-            mWaveHeight = Math.max(0, offset - headHeight);
+            mHeadHeight = Math.min(offset, headerHeight);
+            mWaveHeight = Math.max(0, offset - headerHeight);
             postInvalidate();
         }
 
         if (mState != RefreshState.Refreshing) {
-            float originalDragPercent = 1f * offset / headHeight;
+            float originalDragPercent = 1f * offset / headerHeight;
 
             float dragPercent = Math.min(1f, Math.abs(originalDragPercent));
             float adjustedPercent = (float) Math.max(dragPercent - .4, 0) * 5 / 3;
-            float extraOS = Math.abs(offset) - headHeight;
-            float tensionSlingshotPercent = Math.max(0, Math.min(extraOS, (float) headHeight * 2)
-                    / (float) headHeight);
+            float extraOS = Math.abs(offset) - headerHeight;
+            float tensionSlingshotPercent = Math.max(0, Math.min(extraOS, (float) headerHeight * 2)
+                    / (float) headerHeight);
             float tensionPercent = (float) ((tensionSlingshotPercent / 4) - Math.pow(
                     (tensionSlingshotPercent / 4), 2)) * 2f;
             float strokeStart = adjustedPercent * .8f;
@@ -246,24 +249,29 @@ public class MaterialHeader extends ViewGroup implements RefreshHeader {
     }
 
     @Override
-    public void onReleasing(float percent, int offset, int headHeight, int extendHeight) {
+    public void onReleasing(float percent, int offset, int headerHeight, int extendHeight) {
         if (!mProgress.isRunning() && !mFinished) {
-            onPullingDown(percent, offset, headHeight, extendHeight);
+            onPullingDown(percent, offset, headerHeight, extendHeight);
         } else {
             if (mShowBezierWave) {
-                mHeadHeight = Math.min(offset, headHeight);
-                mWaveHeight = Math.max(0, offset - headHeight);
+                mHeadHeight = Math.min(offset, headerHeight);
+                mWaveHeight = Math.max(0, offset - headerHeight);
                 postInvalidate();
             }
         }
     }
 
     @Override
-    public void onStartAnimator(RefreshLayout layout, int headHeight, int extendHeight) {
+    public void onRefreshReleased(RefreshLayout layout, int headerHeight, int extendHeight) {
         mProgress.start();
-        if ((int) mCircleView.getTranslationY() != headHeight / 2 + mCircleDiameter / 2) {
-            mCircleView.animate().translationY(headHeight / 2 + mCircleDiameter / 2);
+        if ((int) mCircleView.getTranslationY() != headerHeight / 2 + mCircleDiameter / 2) {
+            mCircleView.animate().translationY(headerHeight / 2 + mCircleDiameter / 2);
         }
+    }
+
+    @Override
+    public void onStartAnimator(@NonNull RefreshLayout layout, int headerHeight, int extendHeight) {
+
     }
 
     @Override
@@ -286,15 +294,15 @@ public class MaterialHeader extends ViewGroup implements RefreshHeader {
     }
 
     @Override
-    public int onFinish(RefreshLayout layout, boolean success) {
+    public int onFinish(@NonNull RefreshLayout layout, boolean success) {
         mProgress.stop();
         mCircleView.animate().scaleX(0).scaleY(0);
         mFinished = true;
         return 0;
     }
 
-    @Override
-    public void setPrimaryColors(int... colors) {
+    @Override@Deprecated
+    public void setPrimaryColors(@ColorInt int ... colors) {
         if (colors.length > 0) {
             mBezierPaint.setColor(colors[0]);
         }
@@ -306,6 +314,7 @@ public class MaterialHeader extends ViewGroup implements RefreshHeader {
         return this;
     }
 
+    @NonNull
     @Override
     public SpinnerStyle getSpinnerStyle() {
         return SpinnerStyle.MatchLayout;

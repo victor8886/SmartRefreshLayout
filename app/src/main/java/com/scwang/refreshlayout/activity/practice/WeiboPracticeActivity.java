@@ -6,16 +6,18 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Toast;
 
 import com.scwang.refreshlayout.R;
 import com.scwang.refreshlayout.util.StatusBarUtil;
 import com.scwang.smartrefresh.layout.api.RefreshHeader;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.scwang.smartrefresh.layout.listener.SimpleMultiPurposeListener;
 import com.scwang.smartrefresh.layout.util.DensityUtil;
 
 /**
- * 微博列表
+ * 微博主页
  */
 public class WeiboPracticeActivity extends AppCompatActivity {
 
@@ -44,6 +46,25 @@ public class WeiboPracticeActivity extends AppCompatActivity {
         final NestedScrollView scrollView = (NestedScrollView)findViewById(R.id.scrollView);
         final RefreshLayout refreshLayout = (RefreshLayout)findViewById(R.id.refreshLayout);
 
+        findViewById(R.id.attention).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(view.getContext(),"点击了关注",Toast.LENGTH_SHORT).show();
+            }
+        });
+        findViewById(R.id.leaveword).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(view.getContext(),"点击了留言",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        refreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
+            @Override
+            public void onLoadmore(RefreshLayout refreshlayout) {
+                refreshlayout.finishLoadmore(2000);
+            }
+        });
         refreshLayout.setOnMultiPurposeListener(new SimpleMultiPurposeListener() {
             @Override
             public void onHeaderPulling(RefreshHeader header, float percent, int offset, int bottomHeight, int extendHeight) {

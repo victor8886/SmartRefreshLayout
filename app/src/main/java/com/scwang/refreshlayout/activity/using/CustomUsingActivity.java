@@ -2,6 +2,7 @@ package com.scwang.refreshlayout.activity.using;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -132,16 +133,17 @@ public class CustomUsingActivity extends AppCompatActivity {
         public View getView() {
             return this;//真实的视图就是自己，不能返回null
         }
+        @NonNull
         @Override
         public SpinnerStyle getSpinnerStyle() {
             return SpinnerStyle.Translate;//指定为平移，不能null
         }
         @Override
-        public void onStartAnimator(RefreshLayout layout, int headHeight, int extendHeight) {
+        public void onStartAnimator(@NonNull RefreshLayout layout, int headHeight, int extendHeight) {
             mProgressDrawable.start();//开始动画
         }
         @Override
-        public int onFinish(RefreshLayout layout, boolean success) {
+        public int onFinish(@NonNull RefreshLayout layout, boolean success) {
             mProgressDrawable.stop();//停止动画
             if (success){
                 mHeaderText.setText("刷新完成");
@@ -149,10 +151,6 @@ public class CustomUsingActivity extends AppCompatActivity {
                 mHeaderText.setText("刷新失败");
             }
             return 500;//延迟500毫秒之后再弹回
-        }
-        @Override
-        public boolean isSupportHorizontalDrag() {
-            return false;
         }
         @Override
         public void onStateChanged(RefreshLayout refreshLayout, RefreshState oldState, RefreshState newState) {
@@ -176,7 +174,11 @@ public class CustomUsingActivity extends AppCompatActivity {
             }
         }
         @Override
-        public void onInitialized(RefreshKernel kernel, int height, int extendHeight) {
+        public boolean isSupportHorizontalDrag() {
+            return false;
+        }
+        @Override
+        public void onInitialized(@NonNull RefreshKernel kernel, int height, int extendHeight) {
         }
         @Override
         public void onHorizontalDrag(float percentX, int offsetX, int offsetMax) {
@@ -188,7 +190,10 @@ public class CustomUsingActivity extends AppCompatActivity {
         public void onReleasing(float percent, int offset, int headHeight, int extendHeight) {
         }
         @Override
-        public void setPrimaryColors(int... colors){
+        public void onRefreshReleased(RefreshLayout layout, int headerHeight, int extendHeight) {
+        }
+        @Override
+        public void setPrimaryColors(@ColorInt int ... colors){
         }
     }
 }

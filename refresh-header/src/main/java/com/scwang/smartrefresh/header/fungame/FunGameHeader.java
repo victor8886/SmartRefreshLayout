@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Build;
+import android.support.annotation.ColorInt;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
@@ -18,10 +20,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.scwang.smartrefresh.header.R;
+import com.scwang.smartrefresh.header.util.ColorUtils;
 import com.scwang.smartrefresh.layout.api.RefreshHeader;
 import com.scwang.smartrefresh.layout.api.RefreshKernel;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
-import com.scwang.smartrefresh.layout.util.ColorUtils;
 import com.scwang.smartrefresh.layout.util.DensityUtil;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
@@ -29,8 +31,8 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 /**
  * 游戏 header
  * Created by SCWANG on 2017/6/17.
+ * from https://github.com/Hitomis/FunGameRefresh
  */
-
 public class FunGameHeader extends FunGameBase implements RefreshHeader {
 
     //<editor-fold desc="Field">
@@ -50,9 +52,9 @@ public class FunGameHeader extends FunGameBase implements RefreshHeader {
     private String topMaskViewText = "下拉即将展开";//"Pull To Break Out!";
     private String bottomMaskViewText = "拖动控制游戏";//"Scrooll to move handle";
 
-    private int topMaskTextSize = 16;
+    private int topMaskTextSize;
 
-    private int bottomMaskTextSize = 16;
+    private int bottomMaskTextSize;
 
     //</editor-fold>
 
@@ -89,6 +91,9 @@ public class FunGameHeader extends FunGameBase implements RefreshHeader {
             bottomMaskViewText = ta.getString(R.styleable.FunGameHeader_fgvMaskBottomText);
         }
 
+        topMaskTextSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 16, getResources().getDisplayMetrics());
+        bottomMaskTextSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 16, getResources().getDisplayMetrics());
+
         topMaskTextSize = ta.getDimensionPixelSize(R.styleable.FunGameHeader_fgvBottomTextSize, topMaskTextSize);
         bottomMaskTextSize = ta.getDimensionPixelSize(R.styleable.FunGameHeader_fgvBottomTextSize, bottomMaskTextSize);
 
@@ -110,7 +115,7 @@ public class FunGameHeader extends FunGameBase implements RefreshHeader {
         maskTextView.setTextColor(Color.BLACK);
         maskTextView.setBackgroundColor(Color.WHITE);
         maskTextView.setGravity(gravity | Gravity.CENTER_HORIZONTAL);
-        maskTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP,textSize);
+        maskTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
         maskTextView.setText(text);
         return maskTextView;
     }
@@ -191,8 +196,8 @@ public class FunGameHeader extends FunGameBase implements RefreshHeader {
     //<editor-fold desc="RefreshHeader">
 
 
-    @Override
-    public void setPrimaryColors(int... colors) {
+    @Override@Deprecated
+    public void setPrimaryColors(@ColorInt int ... colors) {
         super.setPrimaryColors(colors);
         if (colors.length > 0) {
             topMaskView.setTextColor(colors[0]);
@@ -206,19 +211,19 @@ public class FunGameHeader extends FunGameBase implements RefreshHeader {
     }
 
     @Override
-    public void onInitialized(RefreshKernel kernel, int height, int extendHeight) {
+    public void onInitialized(@NonNull RefreshKernel kernel, int height, int extendHeight) {
         super.onInitialized(kernel, height, extendHeight);
         coverMaskView();
     }
 
     @Override
-    public void onStartAnimator(RefreshLayout layout, int headHeight, int extendHeight) {
+    public void onStartAnimator(@NonNull RefreshLayout layout, int headHeight, int extendHeight) {
         super.onStartAnimator(layout, headHeight, extendHeight);
         postStart();
     }
 
     @Override
-    public int onFinish(RefreshLayout layout, boolean success) {
+    public int onFinish(@NonNull RefreshLayout layout, boolean success) {
         if (!mManualOperation) {
             postEnd();
         }

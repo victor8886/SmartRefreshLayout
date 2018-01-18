@@ -1,5 +1,6 @@
 package com.scwang.smartrefresh.layout.impl;
 
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,18 +19,11 @@ import com.scwang.smartrefresh.layout.constant.SpinnerStyle;
 
 public class RefreshFooterWrapper implements RefreshFooter {
 
-    private static final String TAG_REFRESH_FOOTER_WRAPPER = "TAG_REFRESH_FOOTER_WRAPPER";
-
     private View mWrapperView;
     private SpinnerStyle mSpinnerStyle;
 
     public RefreshFooterWrapper(View wrapper) {
         this.mWrapperView = wrapper;
-        this.mWrapperView.setTag(TAG_REFRESH_FOOTER_WRAPPER.hashCode(), TAG_REFRESH_FOOTER_WRAPPER);
-    }
-
-    public static boolean isTagedFooter(View view) {
-        return TAG_REFRESH_FOOTER_WRAPPER.equals(view.getTag(TAG_REFRESH_FOOTER_WRAPPER.hashCode()));
     }
 
     @NonNull
@@ -38,15 +32,16 @@ public class RefreshFooterWrapper implements RefreshFooter {
     }
 
     @Override
-    public int onFinish(RefreshLayout layout, boolean success) {
+    public int onFinish(@NonNull RefreshLayout layout, boolean success) {
 		return 0;
 	}
 
-    @Override
-    public void setPrimaryColors(int... colors) {
+    @Override@Deprecated
+    public void setPrimaryColors(@ColorInt int ... colors) {
 
     }
 
+    @NonNull
     @Override
     public SpinnerStyle getSpinnerStyle() {
         if (mSpinnerStyle != null) {
@@ -68,7 +63,7 @@ public class RefreshFooterWrapper implements RefreshFooter {
     }
 
     @Override
-    public void onInitialized(RefreshKernel kernel, int height, int extendHeight) {
+    public void onInitialized(@NonNull RefreshKernel kernel, int height, int extendHeight) {
         ViewGroup.LayoutParams params = mWrapperView.getLayoutParams();
         if (params instanceof SmartRefreshLayout.LayoutParams) {
             kernel.requestDrawBackgoundForFooter(((SmartRefreshLayout.LayoutParams) params).backgroundColor);
@@ -95,7 +90,12 @@ public class RefreshFooterWrapper implements RefreshFooter {
     }
 
     @Override
-    public void onStartAnimator(RefreshLayout layout, int footerHeight, int extendHeight) {
+    public void onLoadmoreReleased(RefreshLayout layout, int footerHeight, int extendHeight) {
+
+    }
+
+    @Override
+    public void onStartAnimator(@NonNull RefreshLayout layout, int footerHeight, int extendHeight) {
 
     }
 

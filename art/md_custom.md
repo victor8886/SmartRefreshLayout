@@ -45,7 +45,7 @@ SmartRefreshLayout 的Header和Footer都有多种变换方式，适应不同风�
 
 **FixedBehind 固定在后面** 和 **Scale 拉伸形变**
 
-![](gif_practive_feedlist.gif) ![](gif_Circle.gif)
+![](gif_practive_feedlist.gif) ![](gif_BezierCircle.gif)
 
 **Screen 全屏幕** 和 **Translate 平行移动**
 
@@ -79,7 +79,7 @@ public interface RefreshHeader {
      * 设置主题颜色 （如果自定义的Header没有注意颜色，本方法可以什么都不处理）
      * @param colors 对应Xml中配置的 srlPrimaryColor srlAccentColor
      */
-    void setPrimaryColors(int... colors);
+    void setPrimaryColors(@ColorInt int ... colors);
 
     /**
      * 尺寸定义初始化完成 （如果高度不改变（代码修改：setHeader），只调用一次, 在RefreshLayout#onMeasure中调用）
@@ -282,10 +282,6 @@ public class ClassicsHeader extends LinearLayout implements RefreshHeader {
         return 500;//延迟500毫秒之后再弹回
     }
     @Override
-    public boolean isSupportHorizontalDrag() {
-        return false;
-    }
-    @Override
     public void onStateChanged(RefreshLayout refreshLayout, RefreshState oldState, RefreshState newState) {
         switch (newState) {
             case None:
@@ -307,6 +303,10 @@ public class ClassicsHeader extends LinearLayout implements RefreshHeader {
         }
     }
     @Override
+    public boolean isSupportHorizontalDrag() {
+        return false;
+    }
+    @Override
     public void onInitialized(RefreshKernel kernel, int height, int extendHeight) {
     }
     @Override
@@ -319,7 +319,10 @@ public class ClassicsHeader extends LinearLayout implements RefreshHeader {
     public void onReleasing(float percent, int offset, int headHeight, int extendHeight) {
     }
     @Override
-    public void setPrimaryColors(int... colors){
+    public void onRefreshReleased(RefreshLayout layout, int headerHeight, int extendHeight) {
+    }
+    @Override
+    public void setPrimaryColors(@ColorInt int ... colors){
     }
 }
 ~~~
@@ -328,3 +331,9 @@ public class ClassicsHeader extends LinearLayout implements RefreshHeader {
 ### 实现 RefreshFooter
 
 具体方法和 RefreshHeader 非常相似，这里就不再演示了
+
+### 成功案例
+
+[YanXuanRefresh](https://github.com/ChaserSheng/YanXuanRefresh)  
+[838514984](https://github.com/838514984/smartrefreshlayout-statusUtils)  
+[一个Android下拉刷新样式](http://www.jianshu.com/p/8f29c97eefd8)  

@@ -1,10 +1,16 @@
 package com.scwang.smartrefresh.layout.api;
 
+import android.support.annotation.RestrictTo;
+
+import static android.support.annotation.RestrictTo.Scope.LIBRARY;
+import static android.support.annotation.RestrictTo.Scope.LIBRARY_GROUP;
+import static android.support.annotation.RestrictTo.Scope.SUBCLASSES;
+
 /**
  * 刷新底部
  * Created by SCWANG on 2017/5/26.
  */
-
+@RestrictTo({LIBRARY,LIBRARY_GROUP,SUBCLASSES})
 public interface RefreshFooter extends RefreshInternal {
     /**
      * 手指拖动下拉（会连续多次调用）
@@ -22,6 +28,14 @@ public interface RefreshFooter extends RefreshInternal {
      * @param extendHeight Footer的扩展高度
      */
     void onPullReleasing(float percent, int offset, int footerHeight, int extendHeight);
+
+    /**
+     * 释放时刻（调用一次，将会触发加载）
+     * @param layout RefreshLayout
+     * @param footerHeight FooterHeight
+     * @param extendHeight extendHeaderHeight or extendFooterHeight
+     */
+    void onLoadmoreReleased(RefreshLayout layout, int footerHeight, int extendHeight);
 
     /**
      * 设置数据全部加载完成，将不能再次触发加载功能

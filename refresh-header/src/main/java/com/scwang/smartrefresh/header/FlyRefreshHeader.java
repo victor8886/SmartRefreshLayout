@@ -7,6 +7,8 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.os.Build;
+import android.support.annotation.ColorInt;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
@@ -20,12 +22,14 @@ import com.scwang.smartrefresh.header.flyrefresh.PathInterpolatorCompat;
 import com.scwang.smartrefresh.layout.api.RefreshHeader;
 import com.scwang.smartrefresh.layout.api.RefreshKernel;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.constant.RefreshState;
 import com.scwang.smartrefresh.layout.header.FalsifyHeader;
 import com.scwang.smartrefresh.layout.util.DensityUtil;
 
 /**
  * 纸飞机和山丘
  * Created by SCWANG on 2017/6/6.
+ * from https://github.com/race604/FlyRefresh
  */
 
 public class FlyRefreshHeader extends FalsifyHeader implements RefreshHeader {
@@ -103,14 +107,7 @@ public class FlyRefreshHeader extends FalsifyHeader implements RefreshHeader {
     }
 
     @Override
-    public void onReleasing(float percent, int offset, int headHeight, int extendHeight) {
-        if (!mIsRefreshing) {
-            onPullingDown(percent, offset, headHeight, extendHeight);
-        }
-    }
-
-    @Override
-    public void onStartAnimator(RefreshLayout layout, int headHeight, int extendHeight) {
+    public void onRefreshReleased(RefreshLayout layout, int headerHeight, int extendHeight) {
         /**
          * 提前关闭 下拉视图偏移
          */
@@ -163,7 +160,19 @@ public class FlyRefreshHeader extends FalsifyHeader implements RefreshHeader {
     }
 
     @Override
-    public void setPrimaryColors(int... colors) {
+    public void onReleasing(float percent, int offset, int headHeight, int extendHeight) {
+        if (!mIsRefreshing) {
+            onPullingDown(percent, offset, headHeight, extendHeight);
+        }
+    }
+
+    @Override
+    public void onStartAnimator(@NonNull RefreshLayout layout, int headHeight, int extendHeight) {
+
+    }
+
+    @Override@Deprecated
+    public void setPrimaryColors(@ColorInt int ... colors) {
         if (colors.length > 0) {
             if (mScenceView != null) {
                 mScenceView.setPrimaryColor(colors[0]);
@@ -172,17 +181,21 @@ public class FlyRefreshHeader extends FalsifyHeader implements RefreshHeader {
     }
 
     @Override
-    public void onInitialized(RefreshKernel kernel, int height, int extendHeight) {
+    public void onInitialized(@NonNull RefreshKernel kernel, int height, int extendHeight) {
         mRefreshKernel = kernel;
         mRefreshLayout = kernel.getRefreshLayout();
     }
 
     @Override
-    public int onFinish(RefreshLayout layout, boolean success) {
+    public int onFinish(@NonNull RefreshLayout layout, boolean success) {
         if (mIsRefreshing) {
             finishRefresh();
         }
         return super.onFinish(layout, success);
+    }
+
+    @Override
+    public void onStateChanged(RefreshLayout refreshLayout, RefreshState oldState, RefreshState newState) {
     }
 
     //</editor-fold>

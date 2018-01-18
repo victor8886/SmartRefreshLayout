@@ -1,14 +1,15 @@
 package com.scwang.smartrefresh.layout.header;
 
 import android.annotation.SuppressLint;
-import android.support.annotation.RequiresApi;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.os.Build;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -34,6 +35,8 @@ import static android.view.View.MeasureSpec.makeMeasureSpec;
 
 public class FalsifyHeader extends View implements RefreshHeader {
 
+    protected RefreshKernel mRefreshKernel;
+
     //<editor-fold desc="FalsifyHeader">
     public FalsifyHeader(Context context) {
         super(context);
@@ -58,8 +61,9 @@ public class FalsifyHeader extends View implements RefreshHeader {
                 resolveSize(getSuggestedMinimumHeight(), heightMeasureSpec));
     }
 
-    @Override@SuppressLint("DrawAllocation")
-    protected final void onDraw(Canvas canvas) {
+    @Override
+    @SuppressLint({"DrawAllocation", "SetTextI18n"})
+    protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (isInEditMode()) {//这段代码在运行时不会执行，只会在Studio编辑预览时运行，不用在意性能问题
             int d = DensityUtil.dp2px(5);
@@ -86,8 +90,8 @@ public class FalsifyHeader extends View implements RefreshHeader {
     //<editor-fold desc="RefreshHeader">
 
     @Override
-    public void onInitialized(RefreshKernel kernel, int height, int extendHeight) {
-
+    public void onInitialized(@NonNull RefreshKernel kernel, int height, int extendHeight) {
+        mRefreshKernel = kernel;
     }
 
     @Override
@@ -110,22 +114,31 @@ public class FalsifyHeader extends View implements RefreshHeader {
     }
 
     @Override
-    public void onStartAnimator(RefreshLayout layout, int headHeight, int extendHeight) {
+    public void onRefreshReleased(RefreshLayout layout, int headerHeight, int extendHeight) {
+        if (mRefreshKernel != null) {
+            mRefreshKernel.setState(RefreshState.None);
+            //onRefreshReleased 的时候 调用 setState(RefreshState.None); 并不会立刻改变成 None
+            //而是先执行一个回弹动画，RefreshFinish 是介于 Refreshing 和 None 之间的状态
+            //RefreshFinish 用于在回弹动画结束时候能顺利改变为 None
+            mRefreshKernel.setState(RefreshState.RefreshFinish);
+        }
+    }
 
+    @Override
+    public void onStartAnimator(@NonNull RefreshLayout layout, int headHeight, int extendHeight) {
     }
 
     @Override
     public void onStateChanged(RefreshLayout refreshLayout, RefreshState oldState, RefreshState newState) {
-
     }
 
     @Override
-    public int onFinish(RefreshLayout layout, boolean success) {
+    public int onFinish(@NonNull RefreshLayout layout, boolean success) {
         return 0;
     }
 
-    @Override
-    public void setPrimaryColors(int... colors) {
+    @Override@Deprecated
+    public void setPrimaryColors(@ColorInt int ... colors) {
 
     }
 
@@ -135,9 +148,10 @@ public class FalsifyHeader extends View implements RefreshHeader {
         return this;
     }
 
+    @NonNull
     @Override
     public SpinnerStyle getSpinnerStyle() {
-        return SpinnerStyle.Scale;
+        return SpinnerStyle.Translate;
     }
     //</editor-fold>
 

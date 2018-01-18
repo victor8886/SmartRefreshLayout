@@ -2,8 +2,7 @@ package com.scwang.smartrefresh.layout.api;
 
 import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
-import android.support.v4.view.NestedScrollingChild;
-import android.support.v4.view.NestedScrollingParent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Interpolator;
 
@@ -18,7 +17,8 @@ import com.scwang.smartrefresh.layout.listener.OnRefreshLoadmoreListener;
  * Created by SCWANG on 2017/5/26.
  */
 
-public interface RefreshLayout extends NestedScrollingParent, NestedScrollingChild {
+@SuppressWarnings({"UnusedReturnValue", "SameParameterValue", "unused"})
+public interface RefreshLayout {
 
     RefreshLayout setFooterHeight(float dp);
 
@@ -42,6 +42,16 @@ public interface RefreshLayout extends NestedScrollingParent, NestedScrollingChi
      * 设置上啦最大高度和Footer高度的比率（将会影响可以上啦的最大高度）
      */
     RefreshLayout setFooterMaxDragRate(float rate);
+
+    /**
+     * 设置 触发刷新距离 与 HeaderHieght 的比率
+     */
+    RefreshLayout setHeaderTriggerRate(float rate);
+
+    /**
+     * 设置 触发加载距离 与 FooterHieght 的比率
+     */
+    RefreshLayout setFooterTriggerRate(float rate);
 
     /**
      * 设置回弹显示插值器
@@ -89,14 +99,16 @@ public interface RefreshLayout extends NestedScrollingParent, NestedScrollingChi
     RefreshLayout setEnableAutoLoadmore(boolean enable);
 
     /**
-     * 设置数据全部加载完成，将不能再次触发加载功能
+     * 标记数据全部加载完成，将不能再次触发加载功能（true）
+     * 在适当时候请使用 finishLoadmoreWithNoMoreData 和 resetNoMoreData 代替
      */
+    @Deprecated
     RefreshLayout setLoadmoreFinished(boolean finished);
 
     /**
      * 设置指定的Footer
      */
-    RefreshLayout setRefreshFooter(RefreshFooter bottom);
+    RefreshLayout setRefreshFooter(RefreshFooter footer);
 
     /**
      * 设置指定的Footer
@@ -114,6 +126,16 @@ public interface RefreshLayout extends NestedScrollingParent, NestedScrollingChi
     RefreshLayout setRefreshHeader(RefreshHeader header, int width, int height);
 
     /**
+     * 设置指定的Content
+     */
+    RefreshLayout setRefreshContent(View content);
+
+    /**
+     * 设置指定的Content
+     */
+    RefreshLayout setRefreshContent(View content, int width, int height);
+
+    /**
      * 设置是否启用越界回弹
      */
     RefreshLayout setEnableOverScrollBounce(boolean enable);
@@ -129,9 +151,29 @@ public interface RefreshLayout extends NestedScrollingParent, NestedScrollingChi
     RefreshLayout setEnableScrollContentWhenLoaded(boolean enable);
 
     /**
+     * 是否在刷新完成之后滚动内容显示新数据
+     */
+    RefreshLayout setEnableScrollContentWhenRefreshed(boolean enable);
+
+    /**
      * 设置在内容不满一页的时候，是否可以上拉加载更多
      */
     RefreshLayout setEnableLoadmoreWhenContentNotFull(boolean enable);
+
+    /**
+     * 设置是否启用越界拖动（仿苹果效果）
+     */
+    RefreshLayout setEnableOverScrollDrag(boolean enable);
+
+    /**
+     * 设置是否在全部加载结束之后Footer跟随内容
+     */
+    RefreshLayout setEnableFooterFollowWhenLoadFinished(boolean enable);
+
+    /**
+     * 设置是会否启用嵌套滚动功能（默认关闭+智能开启）
+     */
+    RefreshLayout setEnableNestedScroll(boolean enabled);
 
     /**
      * 单独设置刷新监听器
@@ -164,9 +206,9 @@ public interface RefreshLayout extends NestedScrollingParent, NestedScrollingChi
     RefreshLayout setPrimaryColors(int... colors);
 
     /**
-     * 设置滚动边界
+     * 设置滚动边界判断器
      */
-    RefreshLayout setRefreshScrollBoundary(RefreshScrollBoundary boundary);
+    RefreshLayout setScrollBoundaryDecider(ScrollBoundaryDecider boundary);
 
     /**
      * 完成刷新
@@ -210,6 +252,21 @@ public interface RefreshLayout extends NestedScrollingParent, NestedScrollingChi
     RefreshLayout finishLoadmore(int delayed, boolean success);
 
     /**
+     * 完成加载
+     */
+    RefreshLayout finishLoadmore(int delayed, boolean success, boolean noMoreData);
+
+    /**
+     * 完成加载并标记没有更多数据
+     */
+    RefreshLayout finishLoadmoreWithNoMoreData();
+
+    /**
+     * 恢复没有更多数据的原始状态
+     */
+    RefreshLayout resetNoMoreData();
+
+    /**
      * 获取当前 Header
      */
     @Nullable
@@ -248,13 +305,17 @@ public interface RefreshLayout extends NestedScrollingParent, NestedScrollingChi
 
     /**
      * 自动刷新
+     * @param delayed 开始延时
      */
     boolean autoRefresh(int delayed);
 
     /**
      * 自动刷新
+     * @param delayed 开始延时
+     * @param duration 拖拽动画持续时间
+     * @param dragrate 拉拽的高度比率（要求 ≥ 1 ）
      */
-    boolean autoRefresh(int delayed, float dragrate);
+    boolean autoRefresh(int delayed, int duration, float dragrate);
 
     /**
      * 自动加载
@@ -263,13 +324,17 @@ public interface RefreshLayout extends NestedScrollingParent, NestedScrollingChi
 
     /**
      * 自动加载
+     * @param delayed 开始延时
      */
     boolean autoLoadmore(int delayed);
 
     /**
      * 自动加载
+     * @param delayed 开始延时
+     * @param duration 拖拽动画持续时间
+     * @param dragrate 拉拽的高度比率（要求 ≥ 1 ）
      */
-    boolean autoLoadmore(int delayed, float dragrate);
+    boolean autoLoadmore(int delayed, int duration, float dragrate);
 
     boolean isEnableRefresh();
 

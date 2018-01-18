@@ -6,23 +6,24 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Build;
+import android.support.annotation.ColorInt;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
-import android.view.WindowManager;
 
 import com.scwang.smartrefresh.header.R;
+import com.scwang.smartrefresh.header.util.ColorUtils;
 import com.scwang.smartrefresh.layout.api.RefreshKernel;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
-import com.scwang.smartrefresh.layout.util.ColorUtils;
 import com.scwang.smartrefresh.layout.util.DensityUtil;
 
 
 /**
  * Created by Hitomis on 2016/3/9.
  * email:196425254@qq.com
+ * https://github.com/Hitomis/FunGameRefresh
  */
 public abstract class FunGameView extends FunGameHeader {
 
@@ -218,20 +219,6 @@ public abstract class FunGameView extends FunGameHeader {
         this.textLoadingFinished = textLoadingFinished;
     }
 
-    /**
-     * 获取屏幕尺寸
-     *
-     * @param context context
-     * @return 手机屏幕尺寸
-     */
-    private DisplayMetrics getScreenMetrics(Context context) {
-        WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        DisplayMetrics dm = new DisplayMetrics();
-        manager.getDefaultDisplay().getMetrics(dm);
-        return dm;
-    }
-
-
     //<editor-fold desc="控制方法">
 
 
@@ -276,14 +263,14 @@ public abstract class FunGameView extends FunGameHeader {
 
     //<editor-fold desc="RefreshHeader">
     @Override
-    public void onInitialized(RefreshKernel kernel, int height, int extendHeight) {
+    public void onInitialized(@NonNull RefreshKernel kernel, int height, int extendHeight) {
         super.onInitialized(kernel, height, extendHeight);
         initConcreteView();
         postStatus(STATUS_GAME_PREPAR);
     }
 
     @Override
-    public int onFinish(RefreshLayout layout, boolean success) {
+    public int onFinish(@NonNull RefreshLayout layout, boolean success) {
         if (mManualOperation) {
             postStatus(success ? FunGameView.STATUS_GAME_FINISHED : FunGameView.STATUS_GAME_FAIL);
         } else {
@@ -292,8 +279,8 @@ public abstract class FunGameView extends FunGameHeader {
         return super.onFinish(layout, success);
     }
 
-    @Override
-    public void setPrimaryColors(int... colors) {
+    @Override@Deprecated
+    public void setPrimaryColors(@ColorInt int ... colors) {
         super.setPrimaryColors(colors);
         if (colors.length > 0) {
             mBoundaryColor = mBackColor = colors[0];

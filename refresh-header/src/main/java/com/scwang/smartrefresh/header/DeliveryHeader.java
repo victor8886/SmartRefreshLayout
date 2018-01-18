@@ -1,13 +1,14 @@
 package com.scwang.smartrefresh.header;
 
-import android.support.annotation.RequiresApi;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Build;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -21,12 +22,10 @@ import com.scwang.smartrefresh.layout.util.DensityUtil;
 
 /**
  * Refresh your delivery!
- * https://dribbble.com/shots/2753803-Refresh-your-delivery
  * Created by SCWANG on 2017/6/25.
+ * design https://dribbble.com/shots/2753803-Refresh-your-delivery
  */
-
 public class DeliveryHeader extends View implements RefreshHeader {
-
 
     //<editor-fold desc="Field">
     private Paint mPaint;
@@ -210,6 +209,11 @@ public class DeliveryHeader extends View implements RefreshHeader {
     }
 
     @Override
+    public void onRefreshReleased(RefreshLayout layout, int headerHeight, int extendHeight) {
+        onStartAnimator(layout, headerHeight, extendHeight);
+    }
+
+    @Override
     public void onReleasing(float percent, int offset, int headerHeight, int extendHeight) {
         if (mState != RefreshState.Refreshing) {
             mBoxDrawable.getPaint().setAlpha((int) (255 * (1f - Math.max(0, percent - 1))));
@@ -231,13 +235,14 @@ public class DeliveryHeader extends View implements RefreshHeader {
         return this;
     }
 
+    @NonNull
     @Override
     public SpinnerStyle getSpinnerStyle() {
         return SpinnerStyle.Scale;
     }
 
-    @Override
-    public void setPrimaryColors(int... colors) {
+    @Override@Deprecated
+    public void setPrimaryColors(@ColorInt int ... colors) {
         if (colors.length > 0) {
             setBackgroundColor(colors[0]);
             if (colors.length > 1) {
@@ -247,18 +252,19 @@ public class DeliveryHeader extends View implements RefreshHeader {
     }
 
     @Override
-    public void onInitialized(RefreshKernel kernel, int height, int extendHeight) {
+    public void onInitialized(@NonNull RefreshKernel kernel, int height, int extendHeight) {
         mHeaderHeight = height;
     }
 
     @Override
-    public void onStartAnimator(RefreshLayout layout, int height, int extendHeight) {
+    public void onStartAnimator(@NonNull RefreshLayout layout, int height, int extendHeight) {
         mState = RefreshState.Refreshing;
+        mBoxDrawable.getPaint().setAlpha(255);
         invalidate();
     }
 
     @Override
-    public int onFinish(RefreshLayout layout, boolean success) {
+    public int onFinish(@NonNull RefreshLayout layout, boolean success) {
         return 0;
     }
     //</editor-fold>

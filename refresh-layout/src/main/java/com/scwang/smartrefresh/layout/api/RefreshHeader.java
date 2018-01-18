@@ -1,10 +1,16 @@
 package com.scwang.smartrefresh.layout.api;
 
+import android.support.annotation.RestrictTo;
+
+import static android.support.annotation.RestrictTo.Scope.LIBRARY;
+import static android.support.annotation.RestrictTo.Scope.LIBRARY_GROUP;
+import static android.support.annotation.RestrictTo.Scope.SUBCLASSES;
+
 /**
  * 刷新头部
  * Created by SCWANG on 2017/5/26.
  */
-
+@RestrictTo({LIBRARY,LIBRARY_GROUP,SUBCLASSES})
 public interface RefreshHeader extends RefreshInternal {
     /**
      * 手指拖动下拉（会连续多次调用）
@@ -23,4 +29,12 @@ public interface RefreshHeader extends RefreshInternal {
      * @param extendHeight Header的扩展高度
      */
     void onReleasing(float percent, int offset, int headerHeight, int extendHeight);
+
+    /**
+     * 释放时刻（调用一次，将会触发加载）
+     * @param layout RefreshLayout
+     * @param headerHeight HeaderHeight
+     * @param extendHeight extendHeaderHeight or extendFooterHeight
+     */
+    void onRefreshReleased(RefreshLayout layout, int headerHeight, int extendHeight);
 }

@@ -8,11 +8,12 @@ package com.scwang.smartrefresh.header;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.support.annotation.RequiresApi;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.os.Build;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +35,11 @@ import static android.view.View.MeasureSpec.getSize;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
-
+/**
+ * WaterDropHeader
+ * Created by SCWANG on 2017/5/31.
+ * from https://github.com/THEONE10211024/WaterDropListView
+ */
 public class WaterDropHeader extends ViewGroup implements RefreshHeader {
 
     //<editor-fold desc="Field">
@@ -134,7 +139,9 @@ public class WaterDropHeader extends ViewGroup implements RefreshHeader {
             canvas.save();
             canvas.translate(
                     getWidth()/2-mProgressDrawable.width()/2,
-                    getHeight()/2-mProgressDrawable.height()/2
+                    mWaterDropView.getMaxCircleRadius()
+                            +mWaterDropView.getPaddingTop()
+                            -mProgressDrawable.height()/2
             );
             canvas.rotate(mProgressDegree, mProgressDrawable.width() / 2, mProgressDrawable.height() / 2);
             mProgressDrawable.draw(canvas);
@@ -145,7 +152,7 @@ public class WaterDropHeader extends ViewGroup implements RefreshHeader {
 
     //<editor-fold desc="RefreshHeader">
     @Override
-    public void onInitialized(RefreshKernel kernel, int height, int extendHeight) {
+    public void onInitialized(@NonNull RefreshKernel kernel, int height, int extendHeight) {
 
     }
 
@@ -182,7 +189,7 @@ public class WaterDropHeader extends ViewGroup implements RefreshHeader {
 
     @Override
     public void onReleasing(float percent, int offset, int headHeight, int extendHeight) {
-        if (mState != RefreshState.Refreshing) {
+        if (mState != RefreshState.Refreshing && mState != RefreshState.RefreshReleased) {
             mWaterDropView.updateComleteState(Math.max(offset, 0), headHeight + extendHeight);
             mWaterDropView.postInvalidate();
         }
@@ -212,7 +219,7 @@ public class WaterDropHeader extends ViewGroup implements RefreshHeader {
     }
 
     @Override
-    public void onStartAnimator(final RefreshLayout layout, int headHeight, int extendHeight) {
+    public void onRefreshReleased(final RefreshLayout layout, int headerHeight, int extendHeight) {
         Animator animator = mWaterDropView.createAnimator();
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -231,7 +238,7 @@ public class WaterDropHeader extends ViewGroup implements RefreshHeader {
             public void run() {
                 mProgressDegree = (mProgressDegree + 30) % 360;
                 invalidate();
-                if (mState == RefreshState.Refreshing) {
+                if (mState == RefreshState.Refreshing || mState == RefreshState.RefreshReleased) {
                     layout.getLayout().postDelayed(this, 100);
                 }
             }
@@ -239,12 +246,17 @@ public class WaterDropHeader extends ViewGroup implements RefreshHeader {
     }
 
     @Override
-    public int onFinish(RefreshLayout layout, boolean success) {
-        return 0;
+    public void onStartAnimator(@NonNull RefreshLayout layout, int headHeight, int extendHeight) {
+
     }
 
     @Override
-    public void setPrimaryColors(int... colors) {
+    public int onFinish(@NonNull RefreshLayout layout, boolean success) {
+        return 0;
+    }
+
+    @Override@Deprecated
+    public void setPrimaryColors(@ColorInt int ... colors) {
         if (colors.length > 0) {
             mWaterDropView.setIndicatorColor(colors[0]);
         }
@@ -256,6 +268,7 @@ public class WaterDropHeader extends ViewGroup implements RefreshHeader {
         return this;
     }
 
+    @NonNull
     @Override
     public SpinnerStyle getSpinnerStyle() {
         return SpinnerStyle.Scale;

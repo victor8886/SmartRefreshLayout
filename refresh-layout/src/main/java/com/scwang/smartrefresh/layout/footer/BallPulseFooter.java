@@ -3,6 +3,7 @@ package com.scwang.smartrefresh.layout.footer;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.annotation.AttrRes;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.graphics.ColorUtils;
@@ -96,7 +97,7 @@ public class BallPulseFooter extends ViewGroup implements RefreshFooter {
 
     //<editor-fold desc="RefreshFooter">
     @Override
-    public void onInitialized(RefreshKernel kernel, int height, int extendHeight) {
+    public void onInitialized(@NonNull RefreshKernel kernel, int height, int extendHeight) {
 
     }
 
@@ -118,7 +119,12 @@ public class BallPulseFooter extends ViewGroup implements RefreshFooter {
     }
 
     @Override
-    public void onStartAnimator(RefreshLayout layout, int footerHeight, int extendHeight) {
+    public void onLoadmoreReleased(RefreshLayout layout, int footerHeight, int extendHeight) {
+
+    }
+
+    @Override
+    public void onStartAnimator(@NonNull RefreshLayout layout, int footerHeight, int extendHeight) {
         mBallPulseView.startAnim();
     }
 
@@ -127,7 +133,7 @@ public class BallPulseFooter extends ViewGroup implements RefreshFooter {
     }
 
     @Override
-    public int onFinish(RefreshLayout layout, boolean success) {
+    public int onFinish(@NonNull RefreshLayout layout, boolean success) {
         mBallPulseView.stopAnim();
         return 0;
     }
@@ -137,8 +143,8 @@ public class BallPulseFooter extends ViewGroup implements RefreshFooter {
         return false;
     }
 
-    @Override
-    public void setPrimaryColors(int... colors) {
+    @Override@Deprecated
+    public void setPrimaryColors(@ColorInt int... colors) {
         if (colors.length > 1) {
             mBallPulseView.setNormalColor(colors[1]);
             mBallPulseView.setAnimatingColor(colors[0]);
@@ -147,13 +153,13 @@ public class BallPulseFooter extends ViewGroup implements RefreshFooter {
             mBallPulseView.setAnimatingColor(colors[0]);
         }
     }
-
     @NonNull
     @Override
     public View getView() {
         return this;
     }
 
+    @NonNull
     @Override
     public SpinnerStyle getSpinnerStyle() {
         return mSpinnerStyle;
@@ -165,5 +171,21 @@ public class BallPulseFooter extends ViewGroup implements RefreshFooter {
         this.mSpinnerStyle = mSpinnerStyle;
         return this;
     }
+
+    public BallPulseFooter setIndicatorColor(@ColorInt int color) {
+        mBallPulseView.setIndicatorColor(color);
+        return this;
+    }
+
+    public BallPulseFooter setNormalColor(@ColorInt int color) {
+        mBallPulseView.setNormalColor(color);
+        return this;
+    }
+
+    public BallPulseFooter setAnimatingColor(@ColorInt int color) {
+        mBallPulseView.setAnimatingColor(color);
+        return this;
+    }
+
     //</editor-fold>
 }

@@ -2,6 +2,7 @@ package com.scwang.smartrefresh.header.fungame;
 
 import android.content.Context;
 import android.os.Build;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -152,7 +153,8 @@ public class FunGameBase extends FrameLayout implements RefreshHeader {
             mRefreshKernel.getRefreshLayout().setEnableLoadmore(enableLoadmore);
             if (mTouchY != -1) {//还没松手
                 onFinish(mRefreshKernel.getRefreshLayout(), mLastFinish);
-                mRefreshKernel.setStateRefresingFinish();
+//                mRefreshKernel.setStateRefresingFinish();
+                mRefreshKernel.setState(RefreshState.RefreshFinish);
                 mRefreshKernel.animSpinner(0);
 //                mRefreshKernel.getRefreshLayout().finishRefresh(0);
             } else {
@@ -194,7 +196,12 @@ public class FunGameBase extends FrameLayout implements RefreshHeader {
     }
 
     @Override
-    public void onStartAnimator(RefreshLayout layout, int headHeight, int extendHeight) {
+    public void onRefreshReleased(RefreshLayout layout, int headerHeight, int extendHeight) {
+
+    }
+
+    @Override
+    public void onStartAnimator(@NonNull RefreshLayout layout, int headHeight, int extendHeight) {
         mIsFinish = false;
     }
 
@@ -204,7 +211,7 @@ public class FunGameBase extends FrameLayout implements RefreshHeader {
     }
 
     @Override
-    public void onInitialized(RefreshKernel kernel, int height, int extendHeight) {
+    public void onInitialized(@NonNull RefreshKernel kernel, int height, int extendHeight) {
         mRefreshKernel = kernel;
         mHeaderHeight = height;
         setTranslationY(mOffset - mHeaderHeight);
@@ -212,7 +219,7 @@ public class FunGameBase extends FrameLayout implements RefreshHeader {
     }
 
     @Override
-    public int onFinish(RefreshLayout layout, boolean success) {
+    public int onFinish(@NonNull RefreshLayout layout, boolean success) {
         mLastFinish = success;
         if (!mIsFinish) {
             mIsFinish = true;
@@ -228,8 +235,8 @@ public class FunGameBase extends FrameLayout implements RefreshHeader {
         return 0;
     }
 
-    @Override
-    public void setPrimaryColors(int... colors) {
+    @Override@Deprecated
+    public void setPrimaryColors(@ColorInt int ... colors) {
     }
 
     @NonNull
@@ -238,6 +245,7 @@ public class FunGameBase extends FrameLayout implements RefreshHeader {
         return this;
     }
 
+    @NonNull
     @Override
     public SpinnerStyle getSpinnerStyle() {
         return SpinnerStyle.MatchLayout;

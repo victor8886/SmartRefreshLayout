@@ -1,6 +1,6 @@
 # 智能之处
 
-智能是什么玩意？有什么用？
+智能是什么？有什么用？
 
 >智能主要体现 SmartRefreshLayout 对未知布局的自动识别上，这样可以让我们更高效的实现我们所需的功能，也可以实现一些非寻常的功能。
 >下面通过**自定义Header** 和 **嵌套Layout作为内容** 来了解 SmartRefreshLayout 的智能之处。
@@ -49,12 +49,16 @@
 compile 'pl.droidsonroids.gif:android-gif-drawable:1.2.3'//一个开源gif控件
 ```
 ```xml
-    <SmartRefreshLayout>
+    <SmartRefreshLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        app:srlDragRate="0.7"
+        app:srlHeaderMaxDragRate="1.3">
         <pl.droidsonroids.gif.GifImageView
             android:layout_width="match_parent"
             android:layout_height="150dp"
             android:scaleType="centerCrop"
-            android:src="@mipmap/gif_header_repast"/>
+            android:src="@mipmap/gif_header_repast"
+            app:layout_srlSpinnerStyle="Scale"
+            app:layout_srlBackgroundColor="@android:color/transparent"/>
         <ListView/>
         <ClassicsFooter/>
     </SmartRefreshLayout>

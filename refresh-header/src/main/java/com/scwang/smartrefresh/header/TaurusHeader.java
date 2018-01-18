@@ -1,14 +1,15 @@
 package com.scwang.smartrefresh.header;
 
-import android.support.annotation.RequiresApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.os.Build;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -31,8 +32,8 @@ import java.util.Random;
 /**
  * Taurus
  * Created by SCWANG on 2017/5/31.
+ * from https://github.com/Yalantis/Taurus
  */
-
 public class TaurusHeader extends View implements RefreshHeader/*, SizeDefinition*/ {
 
     //<editor-fold desc="Field">
@@ -62,8 +63,6 @@ public class TaurusHeader extends View implements RefreshHeader/*, SizeDefinitio
 
     private PathsDrawable mAirplane;
     private PathsDrawable mCloudCenter;
-    private PathsDrawable mCloudLeft;
-    private PathsDrawable mCloudRight;
     private Matrix mMatrix;
     private float mPercent;
     private int mHeaderHeight;
@@ -114,6 +113,8 @@ public class TaurusHeader extends View implements RefreshHeader/*, SizeDefinitio
     }
 
     private void initView(Context context, AttributeSet attrs) {
+        setMinimumHeight(DensityUtil.dp2px(100));
+
         mMatrix = new Matrix();
         mWinds = new HashMap<>();
         mRandom = new Random();
@@ -137,11 +138,18 @@ public class TaurusHeader extends View implements RefreshHeader/*, SizeDefinitio
 
         ta.recycle();
     }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        setMeasuredDimension(resolveSize(getSuggestedMinimumWidth(), widthMeasureSpec),
+                resolveSize(getSuggestedMinimumHeight(), heightMeasureSpec));
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="RefreshHeader">
     @Override
-    public void onInitialized(RefreshKernel kernel, int height, int extendHeight) {
+    public void onInitialized(@NonNull RefreshKernel kernel, int height, int extendHeight) {
 
     }
 
@@ -156,21 +164,26 @@ public class TaurusHeader extends View implements RefreshHeader/*, SizeDefinitio
 
     @Override
     public void onPullingDown(float percent, int offset, int headHeight, int extendHeight) {
+        mPercent = percent;
         mEndOfRefreshing = false;
-        mPercent = 1f * offset / headHeight;
         mHeaderHeight = headHeight;
     }
 
     @Override
     public void onReleasing(float percent, int offset, int headHeight, int extendHeight) {
-        mPercent = 1f * offset / headHeight;
+        mPercent = percent;
         mHeaderHeight = headHeight;
     }
 
     @Override
-    public void onStartAnimator(RefreshLayout layout, int headHeight, int extendHeight) {
+    public void onStartAnimator(@NonNull RefreshLayout layout, int headHeight, int extendHeight) {
         isRefreshing = true;
         startAnimation(mAnimation);
+    }
+
+    @Override
+    public void onRefreshReleased(RefreshLayout layout, int headerHeight, int extendHeight) {
+
     }
 
     @Override
@@ -178,15 +191,15 @@ public class TaurusHeader extends View implements RefreshHeader/*, SizeDefinitio
     }
 
     @Override
-    public int onFinish(RefreshLayout layout, boolean success) {
+    public int onFinish(@NonNull RefreshLayout layout, boolean success) {
         isRefreshing = false;
         mEndOfRefreshing = true;
         clearAnimation();
         return 0;
     }
 
-    @Override
-    public void setPrimaryColors(int... colors) {
+    @Override@Deprecated
+    public void setPrimaryColors(@ColorInt int ... colors) {
         setBackgroundColor(colors[0]);
     }
 
@@ -196,6 +209,7 @@ public class TaurusHeader extends View implements RefreshHeader/*, SizeDefinitio
         return this;
     }
 
+    @NonNull
     @Override
     public SpinnerStyle getSpinnerStyle() {
         return SpinnerStyle.Scale;
@@ -294,8 +308,8 @@ public class TaurusHeader extends View implements RefreshHeader/*, SizeDefinitio
         Matrix matrix = mMatrix;
         matrix.reset();
 
-        mCloudLeft = mCloudCenter;
-        mCloudRight = mCloudCenter;
+        PathsDrawable mCloudLeft = mCloudCenter;
+        PathsDrawable mCloudRight = mCloudCenter;
 
         // Drag percent will newer get more then 1 here
         float dragPercent = Math.min(1f, Math.abs(mPercent));
@@ -467,7 +481,7 @@ public class TaurusHeader extends View implements RefreshHeader/*, SizeDefinitio
 
         // Check overdrag
         if (dragPercent > 1.0f /*&& !mEndOfRefreshing*/) {
-            rotateAngle = (dragPercent % 1) * 20;
+            rotateAngle = 20 * (float) (1 - Math.pow(100, -(dragPercent - 1) / 2));
             dragPercent = 1.0f;
         }
 

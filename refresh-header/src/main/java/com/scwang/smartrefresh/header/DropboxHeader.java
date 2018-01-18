@@ -11,6 +11,7 @@ import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -18,19 +19,19 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 
+import com.scwang.smartrefresh.header.util.ColorUtils;
 import com.scwang.smartrefresh.layout.api.RefreshHeader;
 import com.scwang.smartrefresh.layout.api.RefreshKernel;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.constant.RefreshState;
 import com.scwang.smartrefresh.layout.constant.SpinnerStyle;
 import com.scwang.smartrefresh.layout.internal.pathview.PathsDrawable;
-import com.scwang.smartrefresh.layout.util.ColorUtils;
 import com.scwang.smartrefresh.layout.util.DensityUtil;
 
 /**
  * DropboxRefresh
- * https://dribbble.com/shots/3470499-Dropbox-Refresh
  * Created by SCWANG on 2017/6/24.
+ * design https://dribbble.com/shots/3470499-Dropbox-Refresh
  */
 
 public class DropboxHeader extends View implements RefreshHeader {
@@ -373,6 +374,11 @@ public class DropboxHeader extends View implements RefreshHeader {
     }
 
     @Override
+    public void onRefreshReleased(RefreshLayout layout, int headerHeight, int extendHeight) {
+
+    }
+
+    @Override
     public void onReleasing(float percent, int offset, int headerHeight, int extendHeight) {
         mReboundPercent = 1f * Math.max(0, offset - headerHeight) / extendHeight;
     }
@@ -391,13 +397,14 @@ public class DropboxHeader extends View implements RefreshHeader {
         return this;
     }
 
+    @NonNull
     @Override
     public SpinnerStyle getSpinnerStyle() {
         return SpinnerStyle.Scale;
     }
 
-    @Override
-    public void setPrimaryColors(int... colors) {
+    @Override@Deprecated
+    public void setPrimaryColors(@ColorInt int ... colors) {
         if (colors.length > 0) {
             setBackgroundColor(colors[0]);
             if (colors.length > 1) {
@@ -407,7 +414,7 @@ public class DropboxHeader extends View implements RefreshHeader {
     }
 
     @Override
-    public void onInitialized(RefreshKernel kernel, int height, int extendHeight) {
+    public void onInitialized(@NonNull RefreshKernel kernel, int height, int extendHeight) {
         mHeaderHeight = height;
         final int sideLength = generateSideLength();
         mDrawable1.setBounds(0, 0, sideLength, sideLength);
@@ -416,14 +423,14 @@ public class DropboxHeader extends View implements RefreshHeader {
     }
 
     @Override
-    public void onStartAnimator(RefreshLayout layout, int height, int extendHeight) {
+    public void onStartAnimator(@NonNull RefreshLayout layout, int height, int extendHeight) {
         if (mDropOutAnimator != null) {
             mDropOutAnimator.start();
         }
     }
 
     @Override
-    public int onFinish(RefreshLayout layout, boolean success) {
+    public int onFinish(@NonNull RefreshLayout layout, boolean success) {
         mDropOutPercent = 0;
         return 0;
     }

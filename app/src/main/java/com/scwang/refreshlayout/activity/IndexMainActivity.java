@@ -6,14 +6,15 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.BottomNavigationView.OnNavigationItemSelectedListener;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.scwang.refreshlayout.R;
-import com.scwang.refreshlayout.fragment.RefreshPractiveFragment;
-import com.scwang.refreshlayout.fragment.RefreshStylesFragment;
-import com.scwang.refreshlayout.fragment.RefreshUsingFragment;
+import com.scwang.refreshlayout.fragment.index.RefreshPractiveFragment;
+import com.scwang.refreshlayout.fragment.index.RefreshStylesFragment;
+import com.scwang.refreshlayout.fragment.index.RefreshUsingFragment;
 import com.scwang.refreshlayout.util.StatusBarUtil;
 
 public class IndexMainActivity extends AppCompatActivity implements OnNavigationItemSelectedListener {
@@ -69,7 +70,25 @@ public class IndexMainActivity extends AppCompatActivity implements OnNavigation
 
         final BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
-        navigation.setSelectedItemId(R.id.navigation_style);
+//        navigation.setSelectedItemId(R.id.navigation_style);
+
+        ViewPager viewPager = (ViewPager) findViewById(R.id.content);
+        viewPager.setAdapter(new FragmentStatePagerAdapter(getSupportFragmentManager()) {
+            @Override
+            public int getCount() {
+                return TabFragment.values().length;
+            }
+            @Override
+            public Fragment getItem(int position) {
+                return TabFragment.values()[position].fragment();
+            }
+        });
+        viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+            @Override
+            public void onPageSelected(int position) {
+                navigation.setSelectedItemId(TabFragment.values()[position].menuId);
+            }
+        });
 
         //状态栏透明和间距处理
         StatusBarUtil.immersive(this, 0xff000000, 0.1f);
@@ -83,11 +102,12 @@ public class IndexMainActivity extends AppCompatActivity implements OnNavigation
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .replace(R.id.content,TabFragment.from(item.getItemId()).fragment())
-                .commit();
+        ((ViewPager) findViewById(R.id.content)).setCurrentItem(TabFragment.from(item.getItemId()).ordinal());
+//        getSupportFragmentManager()
+//                .beginTransaction()
+//                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+//                .replace(R.id.content,TabFragment.from(item.getItemId()).fragment())
+//                .commit();
         return true;
     }
 }

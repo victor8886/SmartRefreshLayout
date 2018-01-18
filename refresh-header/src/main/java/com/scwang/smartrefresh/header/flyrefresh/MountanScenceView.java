@@ -9,17 +9,19 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.os.Build;
+import android.support.annotation.ColorInt;
 import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.Interpolator;
 
 import com.scwang.smartrefresh.header.R;
-import com.scwang.smartrefresh.layout.util.ColorUtils;
+import com.scwang.smartrefresh.header.util.ColorUtils;
 
 /**
  * 山丘树木场景视图
  * Created by jing on 15-5-28.
+ * from https://github.com/race604/FlyRefresh
  */
 public class MountanScenceView extends View {
 
@@ -276,7 +278,7 @@ public class MountanScenceView extends View {
 
     //</editor-fold>
 
-    public void setPrimaryColor(int color) {
+    public void setPrimaryColor(@ColorInt int color) {
 //        private int COLOR_BACKGROUND = Color.parseColor("#7ECEC9");
 //        private int COLOR_MOUNTAIN_1 = Color.parseColor("#86DAD7");
 //        private int COLOR_MOUNTAIN_2 = Color.parseColor("#3C929C");
